@@ -9,22 +9,42 @@ class Tweet {
 
 	//returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
     get source():string {
-        //TODO: identify whether the source is a live event, an achievement, a completed event, or miscellaneous.
-        return "unknown";
+        const text = this.text.toLowerCase().trim();
+        if (text.startsWith('watch my ') && text.includes('right now')) {
+            return 'live_event';
+        }
+        if (text.startsWith('achieved a new ') || text.startsWith('i just set a goal')) {
+            return 'achievement';
+        }
+        if (text.startsWith('just completed ') || text.startsWith('just posted ') ||
+            text.startsWith('completed a ') || text.startsWith('i just completed ') ||
+            text.startsWith('i just ran with ')) {
+            return 'completed_event';
+        }
+        return 'miscellaneous';
     }
 
-    //returns a boolean, whether the text includes any content written by the person tweeting.
     get written():boolean {
-        //TODO: identify whether the tweet is written
-        return false;
+        return this.writtenText.length > 0;
     }
 
     get writtenText():string {
-        if(!this.written) {
-            return "";
+        let text = this.text.replace(/https?:\/\/\S+/gi, '')
+            .replace(/#Runkeeper\b/gi, '').trim();
+
+        if (this.source == 'completed_event') {
+            const descriptionStart = text.indexOf(' - ');
+            if (descriptionStart == -1) {
+                return '';
+            }
+            text = text.substring(descriptionStart + 3);
+            text = text.replace(/^TomTom MySports Watch\s*/i, '')
+                .replace(/with @Runkeeper\.\s*Check it out!/gi, '');
+        } else if (this.source == 'live_event' || this.source == 'achievement' ||
+                   text.toLowerCase().startsWith('just linked ')) {
+            return '';
         }
-        //TODO: parse the written text from the tweet
-        return "";
+        return text.trim();
     }
 
     get activityType():string {
