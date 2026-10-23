@@ -74,7 +74,19 @@ class Tweet {
     }
 
     getHTMLTableRow(rowNumber:number):string {
-        //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
-        return "<tr></tr>";
+        function escapeHTML(text:string):string {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        const parts = this.text.split(/(https?:\/\/[^\s<>"']+)/gi);
+        const tweetHTML = parts.map(function(part, index) {
+            const escaped = escapeHTML(part);
+            if (index % 2 == 1) {
+                return '<a href="' + escaped + '" target="_blank" rel="noopener noreferrer">' + escaped + '</a>';
+            }
+            return escaped;
+        }).join('');
+        return '<tr><td>' + rowNumber + '</td><td>' + escapeHTML(this.activityType) +
+            '</td><td>' + tweetHTML + '</td></tr>';
     }
 }
