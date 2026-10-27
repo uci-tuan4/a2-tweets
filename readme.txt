@@ -21,4 +21,4 @@ I did not discuss this assignment with other classmates or individuals.
 
 
 5. Is there anything special we need to know in order to run your code?
-No
+From the repo root run 'tsc --project tsconfig.json' to generate tweet.js before opening the html files.
